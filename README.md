@@ -13,3 +13,9 @@ Simple C++ program that prints "Hello, World!".
 ### How to Run
 g++-15 -std=c++17 main.cpp -o hello
 ./hello
+
+## Update (v2)
+Now the program asks for your name and greets you personally.
+
+
+
