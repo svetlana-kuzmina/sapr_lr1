@@ -17,6 +17,12 @@ module apb_slave(
 	// внутренний регистр для хранения данных
 	logic [31:0] register_with_some_name;
 
+	// отдельные регистры для каждого адреса
+    logic [31:0] reg_number;    // 0x0
+    logic [31:0] reg_date;      // 0x4
+    logic [31:0] reg_surname;   // 0x8
+    logic [31:0] reg_name;      // 0xC
+
 	// FSM (Finite State Machine) — конечный автомат ("мозг" слейва) - решает, что делать в каждый момент
 	// APB_SETUP — подготовка к транзакции
 	// APB_W_ENABLE — фаза записи
@@ -36,7 +42,11 @@ module apb_slave(
 			prdata <= '0;
 			pslverr <= 1'b0;
 			pready <= 1'b0;
-			register_with_some_name <= 32'h0;
+			// register_with_some_name <= 32'h0;
+			reg_number  <= 32'h0;
+            reg_date    <= 32'h0;
+            reg_surname <= 32'h0;
+            reg_name    <= 32'h0;
 			apb_st <= APB_SETUP;
 		end 
 		else begin
@@ -67,14 +77,10 @@ module apb_slave(
 						pready <= 1'b1; // сигнализируем мастеру, что готовы принять данные
 
 						case (paddr[7:0])
-							// или обработка записи в регистр для выполнения каких-либо действий (может быть здесь или за пределами FSM APB)
-							// if (pwdata[.....] == ..... )
-							// begin
-							// ......
-							// end
-							8'h0: begin register_with_some_name <= pwdata; end // запись в регистр со смещением 0
-							8'h4: begin end // запись в регистр со смещением 4
-							8'h8: begin end // запись в регистр со смещением 8 
+							8'h0: begin reg_number  <= pwdata; $display("Write number to 0x0: %h", pwdata); end
+                            8'h4: begin reg_date    <= pwdata; $display("Write date to 0x4: %h", pwdata); end
+                            8'h8: begin reg_surname <= pwdata; $display("Write surname to 0x8: %h", pwdata); end
+                            8'hC: begin reg_name    <= pwdata; $display("Write name to 0xC: %h", pwdata); end
 							default: begin pslverr <= 1'b1; end // ошибка, адрес не существует
 						endcase
 
@@ -90,9 +96,10 @@ module apb_slave(
 						pready <= 1'b1; // сигнал готовности
 
 						case (paddr[7:0])
-							8'h0: begin prdata[31:0] <= register_with_some_name[31:0]; end // чтение из регистра со смещением 0
-							8'h4: begin end // запись из регистра со смещением 4
-							8'h8: begin end // запись из регистра со смещением 8
+							8'h0: prdata <= reg_number;
+                            8'h4: prdata <= reg_date;
+                            8'h8: prdata <= reg_surname;
+                            8'hC: prdata <= reg_name;
 							default: begin pslverr <= 1'b1; end // ошибка, если адрес не существует
 						endcase
 
@@ -103,16 +110,6 @@ module apb_slave(
 				default: begin pslverr <= 1'b1; end //Если FSM в неизвестном состоянии — сигнал ошибки
 			endcase
 
-			// пример дополнительного действия с регистром
-			//if (penable==1'b0)
-			// Эта часть просто меняет содержимое регистра на 0xAAAA_AAAA или 0x5555_5555 для теста.
-			// Заменить на запись номера, даты, фамилии, имени по адресам.
-			if (register_with_some_name[0] == 1'b0) begin
-				register_with_some_name <= 32'hAAAA_AAAA;
-			end
-			else begin
-				register_with_some_name <= 32'h5555_5555;
-			end
 		end // закончился блок внутри always
 
 endmodule
