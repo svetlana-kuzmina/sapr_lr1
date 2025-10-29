@@ -1,21 +1,21 @@
-# САПР ЛР №1
+# САПР — Лабораторная работа №1 
 
-Автор: Кузьмина Светлана
-Группа: М3О-410Б-22
+**Автор:** Кузьмина Светлана
+**Группа:** М3О-410Б-22
 
 Данный проект представляет собой лабораторую работу №1 по курсу "Автоматизация проектирования"
 
-## Hello World Project
+## APB Project
 
-### Description
-Simple C++ program that prints "Hello, World!".
+### How to Compiler
+iverilog -g2012 -o apb_tb.out tb_apb_slave.sv apb_slave.sv
 
-### How to Run
-g++-15 -std=c++17 main.cpp -o hello
-./hello
+### How to Run simulation
+vvp apb_tb.out
 
-## Update (v2)
-Now the program asks for your name and greets you personally.
+### How to view waveforms
+gtkwave wave.vcd
+
 
 
 
