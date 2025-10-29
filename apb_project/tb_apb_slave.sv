@@ -114,16 +114,21 @@ module TB; //нет входов или выходов, он только про
         // пример записи/чтения - пример работы мастера
         // Пишем данные в регистр слейва
         // Сразу читаем обратно и выводим результат в консоль
-        address = p_device_offset+0;
-        data_to_device = 32'h12345678;
-        apb_write(address, data_to_device);
-        apb_read(address, data_from_device);
-        $display("Addr= 0x%h, write data 0x%h, read data 0x%h", address, data_to_device, data_from_device);
+        apb_write(p_device_offset + 32'h0, 32'h0000000D);   // номер
+        apb_read(p_device_offset + 32'h0, data_from_device);
+        $display("Read number: %h", data_from_device);
 
-        data_to_device = 32'h1;
-        apb_write(address, data_to_device);
-        apb_read(address, data_from_device);
-        $display("Addr= 0x%h, write data 0x%h, read data 0x%h", address, data_to_device, data_from_device);
+        apb_write(p_device_offset + 32'h4, 32'h29102025);   // дата
+        apb_read(p_device_offset + 32'h4, data_from_device);
+        $display("Read date: %h", data_from_device);
+
+        apb_write(p_device_offset + 32'h8, 32'h4B555A4D);   // KUZM
+        apb_read(p_device_offset + 32'h8, data_from_device);
+        $display("Read surname: %h", data_from_device);
+
+        apb_write(p_device_offset + 32'hC, 32'h53564554);   // SVET
+        apb_read(p_device_offset + 32'hC, data_from_device);
+        $display("Read name: %h", data_from_device);
 
         repeat (10) @(posedge pclk); //Ждём несколько тактов для завершения всех действий
         $stop(); //останавливает симуляцию
